@@ -1,3 +1,4 @@
+# android-youtube-dl
 The android library that wraps Python 2.7 and youtube-dl python scripts.
 
 The library uses Python 2.7 distribution from: https://github.com/kivy/python-for-android project
@@ -10,6 +11,7 @@ The forked version of python youtube-dl application could be found there:
 https://github.com/Redwid/youtube-dl
 It has a few changes to be able to work on android with Python 2.7, in additional it writes the output into files instead of printing to console.
 
+## Usage
 You could embed that library into your own android application (please see /app as an example).
 
 Or install the app and invoke it by using intents:
@@ -53,6 +55,7 @@ And finally send intent to android-youtube-dl, where %url% is a link to your you
 ``` 
 When ``YoutubeDlService`` finished, your application will receive ``JSON_RESULT_SUCCESS`` or ``JSON_RESULT_ERROR`` intents.  
 
+## Update 
 If you would like to customize youtube-dl python scripts or android native wrapper - re build private.mp3 and jniLibs: 
 1. Clone youtube-dl:
 git clone https://github.com/Redwid/youtube-dl.git
@@ -61,3 +64,12 @@ git clone https://github.com/Redwid/python-for-android.git
 3. Execute sh /python-for-android/clean-build-copy.sh
 4. Find you new python and youtube-dl package in /libs/src/main/assets/private.mp3 
 and native libraries in /libs/src/main/jniLibs/
+
+## App
+You could use the sample application to find out how to use *android-youtube-dl* 
+Application has one screen. 
+If you share any video from youtube android application to *Android Youtube-Dl*, after processing it will display video meta info and all discovered links:
+![alt text](/app/distr/ss0.png) ![alt text](/app/distr/ss1.png) 
+
+## License
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
