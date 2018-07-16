@@ -48,7 +48,7 @@ Register broadcast receiver:
 And finally send intent to android-youtube-dl, where %url% is a link to your youtube video:
 ```java        
     final Intent intent = new Intent();
-    intent.setClassName("org.redwid.android.youtube.dl.harness", "org.redwid.android.youtube.dl.YoutubeDlService");
+    intent.setClassName("org.redwid.android.youtube.dl.app", "org.redwid.android.youtube.dl.YoutubeDlService");
     intent.setAction(ACTION_DUMP_JSON);
     intent.putExtra(VALUE_URL, %url%);
     context.startService(serviceIntent);    

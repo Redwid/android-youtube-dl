@@ -1,4 +1,4 @@
-package org.redwid.android.youtube.dl.harness;
+package org.redwid.android.youtube.dl.app;
 
 import android.app.Application;
 

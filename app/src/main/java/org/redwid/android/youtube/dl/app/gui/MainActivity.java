@@ -1,4 +1,4 @@
-package org.redwid.android.youtube.dl.harness.gui;
+package org.redwid.android.youtube.dl.app.gui;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.redwid.android.youtube.dl.YoutubeDlService;
-import org.redwid.android.youtube.dl.harness.R;
-import org.redwid.android.youtube.dl.harness.model.Format;
-import org.redwid.android.youtube.dl.harness.utils.JsonHelper;
+import org.redwid.android.youtube.dl.app.R;
+import org.redwid.android.youtube.dl.app.model.Format;
+import org.redwid.android.youtube.dl.app.utils.JsonHelper;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;

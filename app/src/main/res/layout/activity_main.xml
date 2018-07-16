@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.redwid.android.youtube.dl.harness.gui.MainActivity">
+    tools:context=".gui.MainActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/content"

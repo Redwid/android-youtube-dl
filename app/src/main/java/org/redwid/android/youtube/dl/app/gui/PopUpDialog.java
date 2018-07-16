@@ -1,4 +1,4 @@
-package org.redwid.android.youtube.dl.harness.gui;
+package org.redwid.android.youtube.dl.app.gui;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.redwid.android.youtube.dl.harness.R;
+import org.redwid.android.youtube.dl.app.R;
 
 /**
  * The PopUpDialog class.

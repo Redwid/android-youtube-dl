@@ -1,4 +1,4 @@
-package org.redwid.android.youtube.dl.harness.gui;
+package org.redwid.android.youtube.dl.app.gui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import org.redwid.android.youtube.dl.harness.R;
-import org.redwid.android.youtube.dl.harness.model.Format;
+import org.redwid.android.youtube.dl.app.R;
+import org.redwid.android.youtube.dl.app.model.Format;
 
 import timber.log.Timber;
 

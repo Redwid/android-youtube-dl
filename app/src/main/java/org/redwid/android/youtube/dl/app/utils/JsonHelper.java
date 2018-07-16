@@ -1,4 +1,4 @@
-package org.redwid.android.youtube.dl.harness.utils;
+package org.redwid.android.youtube.dl.app.utils;
 
 import com.google.gson.JsonObject;
 

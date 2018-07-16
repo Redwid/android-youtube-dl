@@ -1,8 +1,8 @@
-package org.redwid.android.youtube.dl.harness.model;
+package org.redwid.android.youtube.dl.app.model;
 
 import android.support.annotation.NonNull;
 
-import org.redwid.android.youtube.dl.harness.utils.JsonHelper;
+import org.redwid.android.youtube.dl.app.utils.JsonHelper;
 
 import com.google.gson.JsonObject;
 
