@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Android Youtube-Dl</string>
+    <string name="empty_screen">Open Youtube application and select share video with "Android Youtube-Dl" application</string>
+    <string name="loading">Loading ...</string>
+    <string name="ok_button_text">OK</string>
+    <string name="error_title">ERROR</string>
+    <string name="error_text">Unable to finish request for the url: %s</string>
+</resources>

@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+group = 'org.redwid.android'
+description = 'youtube-dl'
+version = '0.0.3'
+
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.jakewharton.timber:timber:4.7.0'
+
+    implementation 'android.arch.work:work-runtime:1.0.0-alpha02'
+    //Optional
+    //implementation "android.arch.work:work-firebase:1.0.0-alpha02"
+
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.artifactId = project.description
+            repository(url: "file://${System.env.HOME}/.m2/repository/")
+        }
+    }
+}
+
+artifacts {
+    archives sourcesJar
+}
