@@ -69,6 +69,7 @@ and native libraries in /libs/src/main/jniLibs/
 You could use the sample application to find out how to use *android-youtube-dl* 
 Application has one screen. 
 If you share any video from youtube android application to *Android Youtube-Dl*, after processing it will display video meta info and all discovered links:
+
 ![alt text](/app/distr/ss0.png) ![alt text](/app/distr/ss1.png) 
 
 ## License
