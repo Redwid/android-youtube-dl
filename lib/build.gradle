@@ -29,7 +29,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.jakewharton.timber:timber:4.7.0'
 
-    implementation 'android.arch.work:work-runtime:1.0.0-alpha02'
+    implementation ('android.arch.work:work-runtime:1.0.0-alpha08') {
+        exclude group: 'android.arch.core'
+    }
     //Optional
     //implementation "android.arch.work:work-firebase:1.0.0-alpha02"
 
