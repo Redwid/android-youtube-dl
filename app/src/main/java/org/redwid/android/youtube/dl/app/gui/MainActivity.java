@@ -1,11 +1,14 @@
 package org.redwid.android.youtube.dl.app.gui;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,15 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.redwid.android.youtube.dl.YoutubeDlService;
-import org.redwid.android.youtube.dl.app.R;
-import org.redwid.android.youtube.dl.app.model.Format;
-import org.redwid.android.youtube.dl.app.utils.JsonHelper;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -32,10 +26,28 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.redwid.android.youtube.dl.YoutubeDlService;
+import org.redwid.android.youtube.dl.app.R;
+import org.redwid.android.youtube.dl.app.model.Format;
+import org.redwid.android.youtube.dl.app.utils.JsonHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import androidx.work.WorkManager;
+import androidx.work.WorkStatus;
 import timber.log.Timber;
 
+import static androidx.work.State.CANCELLED;
+import static androidx.work.State.ENQUEUED;
+import static androidx.work.State.FAILED;
+import static androidx.work.State.RUNNING;
+import static androidx.work.State.SUCCEEDED;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static org.redwid.android.youtube.dl.YoutubeDlService.VALUE_URL;
+import static org.redwid.android.youtube.dl.YoutubeDlService.YOUTUBE_DL_WORK;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -75,6 +87,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initData(null);
         registerBroadcastReceiver();
         processSendIntent(getIntent());
+
+        final WorkManager workManager = WorkManager.getInstance();
+        final LiveData<List<WorkStatus>> data = workManager.getStatusesByTag(YOUTUBE_DL_WORK);
+        Timber.i("onCreate(), data: %s", data);
+        data.observe(this, new Observer<List<WorkStatus>>() {
+            @Override
+            public void onChanged(@Nullable List<WorkStatus> workStatuses) {
+                Timber.i("onChanged()");
+                if(workStatuses != null && !workStatuses.isEmpty()) {
+                    Timber.i("onChanged(), workStatuses: %d", workStatuses.size());
+                    int finished = 0;
+                    final StringBuilder builder = new StringBuilder();
+                    for(WorkStatus workStatus: workStatuses) {
+                        Timber.i("onChanged(), workStatus: %s", workStatus);
+                        if(workStatus.getState() == SUCCEEDED ||
+                                workStatus.getState() == FAILED ||
+                                workStatus.getState() == CANCELLED) {
+                            finished++;
+                        }
+                        else
+                        if(workStatus.getState() == ENQUEUED ||
+                                workStatus.getState() == RUNNING) {
+                            Set<String> set = workStatus.getTags();
+                            int count = 1;
+                            for(String tag: set) {
+                                if(tag.startsWith("http")) {
+                                    builder.append(getString(R.string.running_task, count, tag));
+                                }
+                            }
+                        }
+                    }
+                    final TextView empty = findViewById(R.id.empty);
+                    if(builder.length() == 0) {
+                        empty.setText(R.string.empty_screen);
+                    }
+                    else {
+                        empty.setText(getString(R.string.empty_screen_with_extra, getString(R.string.empty_screen), finished, builder.toString()));
+                    }
+                }
+            }
+        });
     }
 
     @Override
