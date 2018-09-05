@@ -21,9 +21,9 @@ public class UnpackWorker extends Worker {
 
     @NonNull
     @Override
-    public WorkerResult doWork() {
+    public Result doWork() {
         final Context applicationContext = getApplicationContext();
-        final WorkerResult workerResult = unpackData(PRIVATE, getAppRootFile(applicationContext), applicationContext);
+        final Result workerResult = unpackData(PRIVATE, getAppRootFile(applicationContext), applicationContext);
         return workerResult;
     }
 
@@ -32,7 +32,7 @@ public class UnpackWorker extends Worker {
         return new File(app_root);
     }
 
-    private WorkerResult unpackData(final String resource, final File target, final Context applicationContext) {
+    private Result unpackData(final String resource, final File target, final Context applicationContext) {
         Timber.i( "unpackData(%s, %s)", resource, target.getName());
         final long time = System.currentTimeMillis();
 
@@ -47,7 +47,7 @@ public class UnpackWorker extends Worker {
 
         // If no version, no unpacking is necessary.
         if (data_version == null) {
-            return WorkerResult.SUCCESS;
+            return Result.SUCCESS;
         }
 
         // Check the current disk version, if any.
@@ -88,11 +88,11 @@ public class UnpackWorker extends Worker {
                 os.close();
             } catch (Exception e) {
                 Timber.e(e, "Exception in unpackData()");
-                return WorkerResult.FAILURE;
+                return Result.FAILURE;
             }
         }
         Timber.i( "unpackData() done, t: %dms", System.currentTimeMillis() - time);
-        return WorkerResult.SUCCESS;
+        return Result.SUCCESS;
     }
 
     public void recursiveDelete(File f) {

@@ -24,10 +24,10 @@ public class YoutubeDlWorker extends Worker {
 
     @NonNull
     @Override
-    public WorkerResult doWork() {
+    public Result doWork() {
         Timber.i("doWork()");
         final Context applicationContext = getApplicationContext();
-        final String stringUrl = getInputData().getString(VALUE_URL, null);
+        final String stringUrl = getInputData().getString(VALUE_URL);
         final String cacheDir = applicationContext.getCacheDir().getAbsolutePath();
         final String applicationRootDir = applicationContext.getFilesDir().getAbsolutePath();
         final String pythonApplicationRootDir = applicationRootDir + "/youtube_dl";
@@ -57,7 +57,7 @@ public class YoutubeDlWorker extends Worker {
         } catch(Throwable t) {
             Timber.e(t, "Exception in nativeStart()");
             broadcastFinishError(applicationContext, t, stringUrl);
-            return WorkerResult.FAILURE;
+            return Result.FAILURE;
         }
         Timber.i("doWork(), nativeStart() end, time: %dms", System.currentTimeMillis() - startTime);
 
@@ -68,10 +68,10 @@ public class YoutubeDlWorker extends Worker {
         }
         else {
             broadcastFinishError(applicationContext, dlDoneFile, stringUrl);
-            return WorkerResult.FAILURE;
+            return Result.FAILURE;
         }
         Timber.i("nativeStart() end");
-        return WorkerResult.SUCCESS;
+        return Result.SUCCESS;
     }
 
     private void broadcastFinishSuccess(final Context context, final File file, final String url) {

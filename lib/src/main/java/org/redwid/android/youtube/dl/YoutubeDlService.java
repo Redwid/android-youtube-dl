@@ -14,9 +14,7 @@ import org.redwid.android.youtube.dl.unpack.UnpackWorker;
 import org.redwid.youtube.dl.android.R;
 
 import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 import timber.log.Timber;
 
@@ -36,6 +34,7 @@ public class YoutubeDlService extends IntentService {
     public static final String NOTIFICATION_CHANNEL_ID = "youtube-dl-service";
 
     public static final String UNPACK_WORK = "UNPACK_WORK";
+    public static final String YOUTUBE_DL_WORK = "YOUTUBE_DL_WORK";
 
     public YoutubeDlService() {
         super("YoutubeDlService");
@@ -50,18 +49,20 @@ public class YoutubeDlService extends IntentService {
         Timber.i("onHandleIntent(), action: %s", action);
         if (ACTION_DUMP_JSON.equals(action)) {
             final WorkManager workManager = WorkManager.getInstance();
-            WorkContinuation continuation = workManager.beginUniqueWork(UNPACK_WORK,
-                    ExistingWorkPolicy.KEEP,
-                    OneTimeWorkRequest.from(UnpackWorker.class));
+            final OneTimeWorkRequest unpack = new OneTimeWorkRequest.Builder(UnpackWorker.class)
+                    .addTag(UNPACK_WORK)
+                    .build();
 
             final String value = intent.getStringExtra(VALUE_URL);
             final OneTimeWorkRequest youtubeDl = new OneTimeWorkRequest.Builder(YoutubeDlWorker.class)
                     .setInputData(getDataInput(value))
+                    .addTag(YOUTUBE_DL_WORK)
                     .addTag(value)
                     .build();
 
-            continuation = continuation.then(youtubeDl);
-            continuation.enqueue();
+            workManager.beginWith(unpack)
+                    .then(youtubeDl)
+                    .enqueue();
         }
     }
 
@@ -69,7 +70,7 @@ public class YoutubeDlService extends IntentService {
     public void onCreate() {
         super.onCreate();
         Timber.i("onCreate()");
-        //startForegroundIfNeeded();
+        startForegroundIfNeeded();
     }
 
     public Data getDataInput(final String stringExtra) {
