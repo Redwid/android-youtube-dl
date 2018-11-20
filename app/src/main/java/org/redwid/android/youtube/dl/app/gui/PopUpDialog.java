@@ -2,8 +2,6 @@ package org.redwid.android.youtube.dl.app.gui;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.redwid.android.youtube.dl.app.R;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialogFragment;
 
 /**
  * The PopUpDialog class.

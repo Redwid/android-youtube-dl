@@ -1,30 +1,24 @@
 package org.redwid.android.youtube.dl.unpack;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import androidx.work.Worker;
 import timber.log.Timber;
 
 /**
- * The UnpackWorker class.
+ * The UnpackTask class.
  */
-public class UnpackWorker extends Worker {
+public class UnpackTask {
 
     public static final String PRIVATE = "private";
     public static final String YOUTUBE_DL = "youtube_dl";
 
-    @NonNull
-    @Override
-    public Result doWork() {
-        final Context applicationContext = getApplicationContext();
-        final Result workerResult = unpackData(PRIVATE, getAppRootFile(applicationContext), applicationContext);
-        return workerResult;
+    public boolean unpack(final Context context) {
+        return unpackData(PRIVATE, getAppRootFile(context), context);
     }
 
     private File getAppRootFile(final Context context) {
@@ -32,7 +26,7 @@ public class UnpackWorker extends Worker {
         return new File(app_root);
     }
 
-    private Result unpackData(final String resource, final File target, final Context applicationContext) {
+    private boolean unpackData(final String resource, final File target, final Context applicationContext) {
         Timber.i( "unpackData(%s, %s)", resource, target.getName());
         final long time = System.currentTimeMillis();
 
@@ -47,7 +41,7 @@ public class UnpackWorker extends Worker {
 
         // If no version, no unpacking is necessary.
         if (data_version == null) {
-            return Result.SUCCESS;
+            return true;
         }
 
         // Check the current disk version, if any.
@@ -88,11 +82,11 @@ public class UnpackWorker extends Worker {
                 os.close();
             } catch (Exception e) {
                 Timber.e(e, "Exception in unpackData()");
-                return Result.FAILURE;
+                return false;
             }
         }
         Timber.i( "unpackData() done, t: %dms", System.currentTimeMillis() - time);
-        return Result.SUCCESS;
+        return true;
     }
 
     public void recursiveDelete(File f) {

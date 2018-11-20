@@ -2,14 +2,12 @@ package org.redwid.android.youtube.dl;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import androidx.work.Worker;
 import timber.log.Timber;
 
 import static org.redwid.android.youtube.dl.YoutubeDlService.JSON_RESULT_ERROR;
@@ -20,62 +18,65 @@ import static org.redwid.android.youtube.dl.YoutubeDlService.VALUE_URL;
 /**
  * The YoutubeDlWorker class.
  */
-public class YoutubeDlWorker extends Worker {
+public class YoutubeDlWorker {
 
-    @NonNull
-    @Override
-    public Result doWork() {
-        Timber.i("doWork()");
-        final Context applicationContext = getApplicationContext();
-        final String stringUrl = getInputData().getString(VALUE_URL);
-        final String cacheDir = applicationContext.getCacheDir().getAbsolutePath();
-        final String applicationRootDir = applicationContext.getFilesDir().getAbsolutePath();
-        final String pythonApplicationRootDir = applicationRootDir + "/youtube_dl";
+    public boolean process(final Context context, final String stringUrl) {
+        Timber.i("process(%s)", this.hashCode());
 
-        final String applicationArguments[] = new String[] { "app_process",
-                "-j", stringUrl,
-                "--cache-dir", cacheDir};
-
-        final File dlDoneFile = new File(pythonApplicationRootDir, "youtube_dl.done");
-        final File dlJsonFile = new File(pythonApplicationRootDir, "youtube_dl.json");
-        if(dlDoneFile.exists()) {
-            dlDoneFile.delete();
-        }
-        if(dlJsonFile.exists()) {
-            dlJsonFile.delete();
-        }
-        final long startTime = System.currentTimeMillis();
-        Timber.i("nativeStart() begin");
         try {
-            YoutubeDlService.nativeStart(applicationRootDir,
-                    pythonApplicationRootDir,
-                    "main.pyo",
-                    "python2.7",
-                    pythonApplicationRootDir,
-                    pythonApplicationRootDir + ":" + pythonApplicationRootDir + "/lib",
-                    applicationArguments);
-        } catch(Throwable t) {
-            Timber.e(t, "Exception in nativeStart()");
-            broadcastFinishError(applicationContext, t, stringUrl);
-            return Result.FAILURE;
-        }
-        Timber.i("doWork(), nativeStart() end, time: %dms", System.currentTimeMillis() - startTime);
+            final long time = System.currentTimeMillis();
+            final String cacheDir = context.getCacheDir().getAbsolutePath();
+            final String applicationRootDir = context.getFilesDir().getAbsolutePath();
+            final String pythonApplicationRootDir = applicationRootDir + "/youtube_dl";
+            Timber.i("process(%s), stringUrl: %s", this.hashCode(), stringUrl);
 
-        Timber.i("doWork(), dlDoneFile.exists(): %b", dlDoneFile.exists());
-        Timber.i("doWork(), dlJsonFile.exists(): %b", dlJsonFile.exists());
-        if(dlJsonFile.exists()) {
-            broadcastFinishSuccess(applicationContext, dlJsonFile, stringUrl);
+            final String applicationArguments[] = new String[]{"app_process",
+                    "-j", stringUrl,
+                    "--cache-dir", cacheDir};
+
+            final File dlDoneFile = new File(pythonApplicationRootDir, "youtube_dl.done");
+            final File dlJsonFile = new File(pythonApplicationRootDir, "youtube_dl.json");
+            if (dlDoneFile.exists()) {
+                dlDoneFile.delete();
+            }
+            if (dlJsonFile.exists()) {
+                dlJsonFile.delete();
+            }
+            loadNativeLibrary();
+            final long startTime = System.currentTimeMillis();
+            try {
+                Timber.i("process(%s), nativeStart() begin", this.hashCode());
+                nativeStart(applicationRootDir,
+                        pythonApplicationRootDir,
+                        "main.pyo",
+                        "python2.7",
+                        pythonApplicationRootDir,
+                        pythonApplicationRootDir + ":" + pythonApplicationRootDir + "/lib",
+                        applicationArguments);
+            } catch (Throwable t) {
+                Timber.e(t, "Exception in nativeStart()");
+                broadcastFinishError(context, t, stringUrl);
+                return false;
+            }
+            Timber.i("process(%s), nativeStart() end, time: %dms", this.hashCode(), System.currentTimeMillis() - startTime);
+
+            Timber.i("process(%s), dlDoneFile.exists(): %b, dlJsonFile.exists(): %b", this.hashCode(), dlDoneFile.exists(), dlJsonFile.exists());
+            if (dlJsonFile.exists()) {
+                broadcastFinishSuccess(context, dlJsonFile, stringUrl);
+            } else {
+                broadcastFinishError(context, dlDoneFile, stringUrl);
+                return false;
+            }
+            Timber.i("process(%s) end, t: %dms", this.hashCode(), System.currentTimeMillis() - time);
+        } catch( Exception e) {
+            Timber.e(e, "process(%s) InterruptedException", this.hashCode());
+            return false;
         }
-        else {
-            broadcastFinishError(applicationContext, dlDoneFile, stringUrl);
-            return Result.FAILURE;
-        }
-        Timber.i("nativeStart() end");
-        return Result.SUCCESS;
+        return false;
     }
 
     private void broadcastFinishSuccess(final Context context, final File file, final String url) {
-        Timber.i("broadcastFinishSuccess()");
+        //Timber.i("broadcastFinishSuccess()");
         final StringBuilder stringBuilder = readFile(file);
         if(stringBuilder.length() != 0) {
             sendBroadcast(context, url, JSON_RESULT_SUCCESS, stringBuilder);
@@ -86,7 +87,7 @@ public class YoutubeDlWorker extends Worker {
     }
 
     private void broadcastFinishError(final Context context, final File file, final String url) {
-        Timber.i("broadcastFinishError()");
+        //Timber.i("broadcastFinishError()");
         final StringBuilder stringBuilder = readFile(file);
         if(stringBuilder.length() != 0) {
             sendBroadcast(context, url, JSON_RESULT_ERROR, stringBuilder);
@@ -94,7 +95,7 @@ public class YoutubeDlWorker extends Worker {
     }
 
     private void broadcastFinishError(final Context context, final Throwable throwable, final String url) {
-        Timber.i("broadcastFinishError()");
+        //Timber.i("broadcastFinishError()");
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{\"result\":\"");
         stringBuilder.append(throwable);
@@ -116,7 +117,7 @@ public class YoutubeDlWorker extends Worker {
     }
 
     private StringBuilder readFile(final File file) {
-        Timber.i("readFile(), file: %s", file);
+        //Timber.i("readFile(), file: %s", file);
         final StringBuilder stringBuilder = new StringBuilder();
         if(file != null && file.exists()) {
             BufferedReader bufferedReader = null;
@@ -149,7 +150,29 @@ public class YoutubeDlWorker extends Worker {
             stringBuilder.append("\"}");
         }
 
-        Timber.i("readFile(), stringBuilder: %s", stringBuilder);
+        //Timber.i("readFile(), stringBuilder: %s", stringBuilder);
         return stringBuilder;
     }
+
+    private void loadNativeLibrary() {
+        Timber.i("loadNativeLibrary(%s)", this.hashCode());
+        final String main = "main";
+        try {
+            System.loadLibrary(main);
+            Timber.i("loadNativeLibrary(%s), loaded: lib%s.so", this.hashCode(), main);
+        } catch(UnsatisfiedLinkError e) {
+            Timber.e(e, "UnsatisfiedLinkError in loadNativeLibrary(), can't load: %s", main);
+        } catch(Exception e) {
+            Timber.e(e, "Exception in loadNativeLibrary(), can't load: %s", main);
+        }
+    }
+
+    // Native part
+    public static native void nativeStart(String androidPrivate,
+                                          String androidArgument,
+                                          String applicationEntrypoint,
+                                          String pythonName,
+                                          String pythonHome,
+                                          String pythonPath,
+                                          String applicationArguments[]);
 }

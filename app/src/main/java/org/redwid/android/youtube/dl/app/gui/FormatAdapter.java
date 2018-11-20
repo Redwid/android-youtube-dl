@@ -3,18 +3,18 @@ package org.redwid.android.youtube.dl.app.gui;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import org.redwid.android.youtube.dl.app.R;
 import org.redwid.android.youtube.dl.app.model.Format;
 
+import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 /**

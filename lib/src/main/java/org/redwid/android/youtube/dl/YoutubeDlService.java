@@ -1,28 +1,26 @@
 package org.redwid.android.youtube.dl;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import android.os.IBinder;
 
-import org.redwid.android.youtube.dl.unpack.UnpackWorker;
+import org.redwid.android.youtube.dl.TaskWorkerThread.TaskWorkerThreadListener;
 import org.redwid.youtube.dl.android.R;
 
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
+import androidx.core.app.NotificationCompat;
 import timber.log.Timber;
 
 /**
  * Replace service to worker
  * https://medium.com/google-developer-experts/services-the-life-with-without-and-worker-6933111d62a6
  */
-public class YoutubeDlService extends IntentService {
+public class YoutubeDlService extends Service implements TaskWorkerThreadListener {
 
     public static final String ACTION_DUMP_JSON =    "org.redwid.android.youtube.dl.action.DUMP_JSON";
     public static final String JSON_RESULT_SUCCESS = "org.redwid.android.youtube.dl.result.JSON_RESULT_SUCCESS";
@@ -33,37 +31,20 @@ public class YoutubeDlService extends IntentService {
 
     public static final String NOTIFICATION_CHANNEL_ID = "youtube-dl-service";
 
-    public static final String UNPACK_WORK = "UNPACK_WORK";
-    public static final String YOUTUBE_DL_WORK = "YOUTUBE_DL_WORK";
+    private TaskWorkerThread taskWorkerThread;
 
-    public YoutubeDlService() {
-        super("YoutubeDlService");
-        Timber.i("<init>");
-        loadLibrary();
+    private final IBinder binder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        public YoutubeDlService getService()
+        {
+            return YoutubeDlService.this;
+        }
     }
 
-    @Override
-    protected void onHandleIntent(@Nullable final Intent intent) {
-        Timber.i("onHandleIntent(%s)", intent);
-        final String action = intent.getAction();
-        Timber.i("onHandleIntent(), action: %s", action);
-        if (ACTION_DUMP_JSON.equals(action)) {
-            final WorkManager workManager = WorkManager.getInstance();
-            final OneTimeWorkRequest unpack = new OneTimeWorkRequest.Builder(UnpackWorker.class)
-                    .addTag(UNPACK_WORK)
-                    .build();
-
-            final String value = intent.getStringExtra(VALUE_URL);
-            final OneTimeWorkRequest youtubeDl = new OneTimeWorkRequest.Builder(YoutubeDlWorker.class)
-                    .setInputData(getDataInput(value))
-                    .addTag(YOUTUBE_DL_WORK)
-                    .addTag(value)
-                    .build();
-
-            workManager.beginWith(unpack)
-                    .then(youtubeDl)
-                    .enqueue();
-        }
+    public IBinder onBind(Intent intent)
+    {
+        return binder;
     }
 
     @Override
@@ -71,12 +52,19 @@ public class YoutubeDlService extends IntentService {
         super.onCreate();
         Timber.i("onCreate()");
         startForegroundIfNeeded();
+        taskWorkerThread = new TaskWorkerThread(this);
     }
 
-    public Data getDataInput(final String stringExtra) {
-        Data.Builder builder = new Data.Builder();
-        builder.putString(VALUE_URL, stringExtra);
-        return builder.build();
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        Timber.i("onStart(%s, %d)", intent, startId);
+        final String action = intent.getAction();
+        final String valueUrl = intent.getStringExtra(VALUE_URL);
+        Timber.i("onStart(), action: %s, valueUrl: %s", action, valueUrl);
+        if (ACTION_DUMP_JSON.equals(action)) {
+            taskWorkerThread.add(valueUrl);
+        }
     }
 
     private void startForegroundIfNeeded() {
@@ -97,28 +85,15 @@ public class YoutubeDlService extends IntentService {
     @Override
     public void onDestroy() {
         Timber.i("onDestroy()");
+        taskWorkerThread.cancel();
+        taskWorkerThread = null;
         super.onDestroy();
     }
 
-    private void loadLibrary() {
-        Timber.i("loadLibrary()");
-        final String main = "main";
-        try {
-            System.loadLibrary(main);
-            Timber.i("loadLibrary(), loaded: lib%s.so", main);
-        } catch(UnsatisfiedLinkError e) {
-            Timber.e(e, "UnsatisfiedLinkError in loadLibrary(), can't load: %s", main);
-        } catch(Exception e) {
-            Timber.e(e, "Exception in loadLibrary(), can't load: %s", main);
-        }
+    @Override
+    public void onCompleteAllItems() {
+        Timber.i("onCompleteAllItems()");
+        stopSelf();
     }
 
-    // Native part
-    public static native void nativeStart(String androidPrivate,
-            String androidArgument,
-            String applicationEntrypoint,
-            String pythonName,
-            String pythonHome,
-            String pythonPath,
-            String applicationArguments[]);
 }

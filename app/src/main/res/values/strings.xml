@@ -7,4 +7,5 @@
     <string name="error_title">ERROR</string>
     <string name="error_text">Unable to finish request for the url: %s</string>
     <string name="running_task">%d. %s</string>
+    <string name="cancel_all_works">Cancel All Works</string>
 </resources>

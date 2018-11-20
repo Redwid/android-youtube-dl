@@ -1,10 +1,10 @@
 package org.redwid.android.youtube.dl.app.model;
 
-import android.support.annotation.NonNull;
+import com.google.gson.JsonObject;
 
 import org.redwid.android.youtube.dl.app.utils.JsonHelper;
 
-import com.google.gson.JsonObject;
+import androidx.annotation.NonNull;
 
 /**
  * The Format class.
