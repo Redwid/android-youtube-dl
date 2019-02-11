@@ -26,6 +26,7 @@ import org.redwid.android.youtube.dl.YoutubeDlService;
 import org.redwid.android.youtube.dl.app.R;
 import org.redwid.android.youtube.dl.app.model.Format;
 import org.redwid.android.youtube.dl.app.utils.JsonHelper;
+import org.redwid.android.youtube.dl.unpack.GZIPUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(final Context context, final Intent intent) {
             Timber.i("onReceive(), action: %s", intent.getAction());
-            final String jsonAsString = intent.getStringExtra(YoutubeDlService.VALUE_JSON);
+            final String jsonAsString = GZIPUtils.uncompress(intent.getByteArrayExtra(YoutubeDlService.VALUE_JSON));
             Timber.i("onReceive(): is jsonAsString empty: %s", TextUtils.isEmpty(jsonAsString));
             hideLoading();
             if(YoutubeDlService.JSON_RESULT_SUCCESS.equals(intent.getAction())) {

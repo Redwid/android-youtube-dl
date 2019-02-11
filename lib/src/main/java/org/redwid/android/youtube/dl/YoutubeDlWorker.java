@@ -3,6 +3,8 @@ package org.redwid.android.youtube.dl;
 import android.content.Context;
 import android.content.Intent;
 
+import org.redwid.android.youtube.dl.unpack.GZIPUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -106,10 +108,11 @@ public class YoutubeDlWorker {
     }
 
     private void sendBroadcast(final Context context, final String url, final String action, final StringBuilder stringBuilder) {
+        Timber.i("sendBroadcast(%s), string length: %d", url, stringBuilder.length());
         try {
             final Intent jsonIntent = new Intent(action);
             jsonIntent.putExtra(VALUE_URL, url);
-            jsonIntent.putExtra(VALUE_JSON, stringBuilder.toString());
+            jsonIntent.putExtra(VALUE_JSON, GZIPUtils.compress(stringBuilder.toString()));
             context.sendBroadcast(jsonIntent);
         } catch(Throwable t) {
             Timber.e(t, "Exception in broadcastFinishError()");

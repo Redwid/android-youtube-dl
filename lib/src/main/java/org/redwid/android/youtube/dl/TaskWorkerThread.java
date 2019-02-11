@@ -14,7 +14,7 @@ public class TaskWorkerThread extends Thread {
 
     public interface TaskWorkerThreadListener {
 
-        public void onCompleteAllItems();
+        void onCompleteAllItems();
     }
 
     private final List<String> list = Collections.synchronizedList(new ArrayList<String>());

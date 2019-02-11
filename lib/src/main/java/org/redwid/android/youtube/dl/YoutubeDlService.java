@@ -69,13 +69,13 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
 
     private void startForegroundIfNeeded() {
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+            final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                     getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT);
 
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 
-            Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            final Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                     .setContentTitle("")
                     .setContentText("").build();
             startForeground(1, notification);
