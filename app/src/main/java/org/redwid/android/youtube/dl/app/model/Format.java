@@ -19,7 +19,7 @@ public class Format implements Comparable<Format> {
     String height;
     String ext;
     String fileSize;
-    int formatId;
+    String formatId;
 
     public Format(final JsonObject item) {
         name = JsonHelper.getAsString(item, "format");
@@ -30,7 +30,7 @@ public class Format implements Comparable<Format> {
         height = JsonHelper.getAsString(item, "height");
         ext = JsonHelper.getAsString(item, "ext");
         fileSize = JsonHelper.getAsString(item, "filesize");
-        formatId = JsonHelper.getAsInt(item, "format_id");
+        formatId = JsonHelper.getAsString(item, "format_id");
     }
 
     public String getName() {
@@ -65,12 +65,15 @@ public class Format implements Comparable<Format> {
         return fileSize;
     }
 
-    public int getFormatId() {
+    public String getFormatId() {
         return formatId;
     }
 
     @Override
     public int compareTo(@NonNull final Format o) {
-        return formatId - o.getFormatId();
+        if(formatId != null) {
+            return formatId.compareTo(o.getFormatId());
+        }
+        return 1;
     }
 }
