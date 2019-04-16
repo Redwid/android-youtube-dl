@@ -15,7 +15,10 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:text="Title"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/description"
