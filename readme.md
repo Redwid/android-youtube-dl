@@ -1,6 +1,3 @@
-# Status
-[![Build Status](https://travis-ci.com/Redwid/android-youtube-dl.svg?branch=master)](https://travis-ci.com/Redwid/android-youtube-dl)
-
 # android-youtube-dl
 The android library that wraps Python 2.7 and youtube-dl python scripts.
 
@@ -13,6 +10,9 @@ It has modified native wrapper to work with ``org.redwid.android.youtube.dl.Yout
 The forked version of python youtube-dl application could be found there: 
 https://github.com/Redwid/youtube-dl
 It has a few changes to be able to work on android with Python 2.7, in additional it writes the output into files instead of printing to console.
+
+## Build Status
+[![Build Status](https://travis-ci.com/Redwid/android-youtube-dl.svg?branch=master)](https://travis-ci.com/Redwid/android-youtube-dl)
 
 ## Usage
 You could embed that library into your own android application (please see /app as an example).
