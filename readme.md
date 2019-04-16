@@ -1,3 +1,6 @@
+# Status
+[![Build Status](https://travis-ci.com/Redwid/android-youtube-dl.svg?branch=master)](https://travis-ci.com/Redwid/android-youtube-dl)
+
 # android-youtube-dl
 The android library that wraps Python 2.7 and youtube-dl python scripts.
 
