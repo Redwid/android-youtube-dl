@@ -24,3 +24,10 @@ android:
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
+
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file: app/build/outputs/apk/debug/app-debug.apk
+  skip_cleanup: true

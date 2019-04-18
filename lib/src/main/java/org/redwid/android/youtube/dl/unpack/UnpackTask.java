@@ -1,6 +1,8 @@
 package org.redwid.android.youtube.dl.unpack;
 
 import android.content.Context;
+import android.os.Build;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,9 +69,11 @@ public class UnpackTask {
             recursiveDelete(target);
             target.mkdirs();
 
-            if (!assetExtract.extractTar(resource + ".mp3", target.getAbsolutePath())) {
+            final String cpuABI = getCPU_ABI();
+            Timber.e( "cpuABI: %s", cpuABI);
+            if (!assetExtract.extractTar(resource + "-" + cpuABI + ".mp3", target.getAbsolutePath())) {
                 //toastError("Could not extract " + resource + " data.");
-                Timber.e( "Could not extract %s data", resource);
+                Timber.e( "Could not extract %s data for cpu abi: %s", resource, cpuABI);
             }
 
             try {
@@ -89,6 +93,16 @@ public class UnpackTask {
         return true;
     }
 
+    private String getCPU_ABI() {
+        if(!TextUtils.isEmpty(Build.CPU_ABI)) {
+            return Build.CPU_ABI;
+        }
+        if(!TextUtils.isEmpty(Build.CPU_ABI2)) {
+            return Build.CPU_ABI2;
+        }
+        return "";
+    }
+
     public void recursiveDelete(File f) {
         if (f.isDirectory()) {
             for (File r : f.listFiles()) {
@@ -97,4 +111,5 @@ public class UnpackTask {
         }
         f.delete();
     }
+
 }
