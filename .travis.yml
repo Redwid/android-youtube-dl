@@ -40,3 +40,5 @@ deploy:
   file: app/build/outputs/apk/debug/app-debug.apk
   skip_cleanup: true
   name: '1.0.1'
+  on:
+    branch: master
