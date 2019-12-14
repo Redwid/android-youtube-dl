@@ -61,7 +61,7 @@ public class TaskWorkerThread extends Thread {
             try {
                 taskInProgress.wait(10000);
             } catch (InterruptedException e) {
-                Timber.e(e, "EROR in sleepTaskInProgress() interrupted");
+                Timber.e(e, "ERROR in sleepTaskInProgress() interrupted");
             }
         }
         Timber.i("sleepTaskInProgress() done");

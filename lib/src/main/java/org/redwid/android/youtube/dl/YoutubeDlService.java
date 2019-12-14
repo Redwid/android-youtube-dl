@@ -10,10 +10,11 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.core.app.NotificationCompat;
+
 import org.redwid.android.youtube.dl.TaskWorkerThread.TaskWorkerThreadListener;
 import org.redwid.youtube.dl.android.R;
 
-import androidx.core.app.NotificationCompat;
 import timber.log.Timber;
 
 /**
@@ -30,8 +31,10 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
     public static final String VALUE_TIME_OUT = "TIME_OUT";
 
     public static final String NOTIFICATION_CHANNEL_ID = "youtube-dl-service";
+    public static final int NOTIFICATION_ID = 111;
 
     private TaskWorkerThread taskWorkerThread;
+    private NotificationManager notificationManager;
 
     private final IBinder binder = new LocalBinder();
 
@@ -51,6 +54,7 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
     public void onCreate() {
         super.onCreate();
         Timber.i("onCreate()");
+        notificationManager = ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE));
         startForegroundIfNeeded();
         taskWorkerThread = new TaskWorkerThread(this);
     }
@@ -67,18 +71,23 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
         }
     }
 
+    public Notification getNotification(String title, String text) {
+        return new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setContentTitle(title)
+                .setContentText(text)
+                .build();
+    }
+
     private void startForegroundIfNeeded() {
         if (Build.VERSION.SDK_INT >= 26) {
             final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                     getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setVibrationPattern(new long[]{0L});
+            channel.enableVibration(true);
+            notificationManager.createNotificationChannel(channel);
 
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
-
-            final Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                    .setContentTitle("")
-                    .setContentText("").build();
-            startForeground(1, notification);
+            startForeground(NOTIFICATION_ID, getNotification("", ""));
         }
     }
 

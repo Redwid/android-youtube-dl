@@ -70,7 +70,7 @@ public class UnpackTask {
             target.mkdirs();
 
             final String cpuABI = getCPU_ABI();
-            Timber.e( "cpuABI: %s", cpuABI);
+            Timber.d( "cpuABI: %s", cpuABI);
             if (!assetExtract.extractTar(resource + "-" + cpuABI + ".mp3", target.getAbsolutePath())) {
                 //toastError("Could not extract " + resource + " data.");
                 Timber.e( "Could not extract %s data for cpu abi: %s", resource, cpuABI);

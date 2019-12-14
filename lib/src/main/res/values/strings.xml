@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">lib</string>
-    <string name="private_version">25_06_2019</string>
+    <string name="private_version">13_06_2019</string>
     <string name="notification_channel_name">Youtube-Dl Service</string>
 </resources>
