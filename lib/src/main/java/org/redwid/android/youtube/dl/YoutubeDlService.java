@@ -63,11 +63,15 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Timber.i("onStart(%s, %d)", intent, startId);
-        final String action = intent.getAction();
-        final String valueUrl = intent.getStringExtra(VALUE_URL);
-        Timber.i("onStart(), action: %s, valueUrl: %s", action, valueUrl);
-        if (ACTION_DUMP_JSON.equals(action)) {
-            taskWorkerThread.add(valueUrl);
+        if(intent != null) {
+            final String action = intent.getAction();
+            final String valueUrl = intent.getStringExtra(VALUE_URL);
+            Timber.i("onStart(), action: %s, valueUrl: %s", action, valueUrl);
+            if (ACTION_DUMP_JSON.equals(action)) {
+                taskWorkerThread.add(valueUrl);
+            }
+        } else {
+            Timber.e("onStart() intent is null");
         }
     }
 
@@ -79,7 +83,7 @@ public class YoutubeDlService extends Service implements TaskWorkerThreadListene
     }
 
     private void startForegroundIfNeeded() {
-        if (Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                     getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_DEFAULT);
